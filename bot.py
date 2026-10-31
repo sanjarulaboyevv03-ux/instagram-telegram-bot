@@ -5,7 +5,13 @@ from pathlib import Path
 
 import yt_dlp
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    BotCommand
+)
+
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -25,30 +31,52 @@ CHANNELS = [
 INSTAGRAM = "https://www.instagram.com/sanjarulaboyevvv/"
 
 
+# OBUNA MENYUSI
 def buttons():
     keyboard = [
+        [InlineKeyboardButton(
+            "📢 1-kanalga obuna bo‘lish",
+            url="https://t.me/Qora_ritsar_uz"
+        )],
+        [InlineKeyboardButton(
+            "📢 2-kanalga obuna bo‘lish",
+            url="https://t.me/ENGZORMUZIKALARR"
+        )],
+        [InlineKeyboardButton(
+            "📸 Instagram",
+            url=INSTAGRAM
+        )],
+        [InlineKeyboardButton(
+            "✅ Obunani tekshirish",
+            callback_data="check"
+        )]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
+# ASOSIY MENYU
+def main_menu():
+    keyboard = [
+        [InlineKeyboardButton(
+            "📥 Video yuklash",
+            callback_data="download"
+        )],
+        [InlineKeyboardButton(
+            "📢 Kanallarimiz",
+            callback_data="channels"
+        )],
+        [InlineKeyboardButton(
+            "📸 Instagram",
+            url=INSTAGRAM
+        )],
         [
             InlineKeyboardButton(
-                "📢 1-kanalga obuna bo‘lish",
-                url="https://t.me/Qora_ritsar_uz"
-            )
-        ],
-        [
+                "ℹ️ Bot haqida",
+                callback_data="about"
+            ),
             InlineKeyboardButton(
-                "📢 2-kanalga obuna bo‘lish",
-                url="https://t.me/ENGZORMUZIKALARR"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "📸 Instagram sahifamiz",
-                url=INSTAGRAM
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "✅ Obunani tekshirish",
-                callback_data="check"
+                "🆘 Yordam",
+                callback_data="help"
             )
         ]
     ]
@@ -56,6 +84,7 @@ def buttons():
     return InlineKeyboardMarkup(keyboard)
 
 
+# OBUNANI TEKSHIRISH
 async def check_sub(user_id, bot):
     for channel in CHANNELS:
         try:
@@ -73,25 +102,39 @@ async def check_sub(user_id, bot):
     return True
 
 
+# START
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 Assalomu alaykum!\n\n"
-        "🎬 Instagram video yuklovchi botga xush kelibsiz!\n\n"
-        "Botdan foydalanish uchun uchta kanalga ham obuna bo‘ling.\n\n"
-        "Obuna bo‘lgach, tekshirish tugmasini bosing.",
-        reply_markup=buttons()
-    )
+
+    if await check_sub(update.effective_user.id, context.bot):
+
+        await update.message.reply_text(
+            "👋 Assalomu alaykum!\n\n"
+            "🎬 Instagram video yuklovchi botga xush kelibsiz!\n\n"
+            "Kerakli bo‘limni tanlang:",
+            reply_markup=main_menu()
+        )
+
+    else:
+        await update.message.reply_text(
+            "👋 Assalomu alaykum!\n\n"
+            "Botdan foydalanish uchun ikkala kanalga obuna bo‘ling.",
+            reply_markup=buttons()
+        )
 
 
+# OBUNANI TEKSHIRISH TUGMASI
 async def check_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     query = update.callback_query
 
     if await check_sub(query.from_user.id, context.bot):
+
         await query.answer("✅ Obuna tasdiqlandi!")
 
         await query.message.reply_text(
             "🎉 Tabriklaymiz!\n\n"
-            "Endi Instagram video havolasini yuborishingiz mumkin."
+            "Asosiy menyu:",
+            reply_markup=main_menu()
         )
 
     else:
@@ -101,12 +144,69 @@ async def check_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
+# MENYU TUGMALARI
+async def menu_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    if not await check_sub(query.from_user.id, context.bot):
+        await query.message.reply_text(
+            "❌ Avval kanallarga obuna bo‘ling!",
+            reply_markup=buttons()
+        )
+        return
+
+    if query.data == "download":
+        await query.message.reply_text(
+            "📥 Instagram video havolasini yuboring.\n\n"
+            "Bot videoni yuklab beradi."
+        )
+
+    elif query.data == "channels":
+        await query.message.reply_text(
+            "📢 Bizning kanallarimiz:",
+            reply_markup=buttons()
+        )
+
+    elif query.data == "about":
+        await query.message.reply_text(
+            "ℹ️ BOT HAQIDA\n\n"
+            "🎬 Instagram video yuklovchi bot.\n"
+            "⚡ Tez va qulay.\n\n"
+            "👤 Admin: @sanjarulaboyevvv"
+        )
+
+    elif query.data == "help":
+        await query.message.reply_text(
+            "🆘 YORDAM\n\n"
+            "1. Instagramga kiring.\n"
+            "2. Video havolasini nusxalang.\n"
+            "3. Botga yuboring.\n"
+            "4. Video tayyor bo‘ladi."
+        )
+
+
+# YORDAM BUYRUG‘I
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🆘 Yordam:\n\n"
+        "Instagram video havolasini botga yuboring."
+    )
+
+
+# BOT HAQIDA
+async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🎬 Instagram Video Downloader\n"
+        "👤 Admin: @sanjarulaboyevvv"
+    )
+
+
+# VIDEO YUKLASH
 async def download_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    if not await check_sub(
-        update.effective_user.id,
-        context.bot
-    ):
+    if not await check_sub(update.effective_user.id, context.bot):
         await update.message.reply_text(
             "❌ Avval ikkala kanalga obuna bo‘ling!",
             reply_markup=buttons()
@@ -163,21 +263,43 @@ async def download_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
+# TELEGRAM PASTIDAGI MENU
+async def post_init(app):
+    await app.bot.set_my_commands([
+        BotCommand("start", "🏠 Bosh menyu"),
+        BotCommand("help", "🆘 Yordam"),
+        BotCommand("about", "ℹ️ Bot haqida")
+    ])
+
+
+# BOTNI ISHGA TUSHIRISH
 def main():
 
     if not TOKEN:
         raise RuntimeError("BOT_TOKEN topilmadi!")
 
-    app = Application.builder().token(TOKEN).build()
-
-    app.add_handler(
-        CommandHandler("start", start)
+    app = (
+        Application.builder()
+        .token(TOKEN)
+        .post_init(post_init)
+        .build()
     )
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("about", about_command))
 
     app.add_handler(
         CallbackQueryHandler(
             check_button,
             pattern="^check$"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            menu_buttons,
+            pattern="^(download|channels|about|help)$"
         )
     )
 
