@@ -151,3 +151,4 @@ async def check_sub(user_id, bot):
             return False
 
     return True
+if member.status in
