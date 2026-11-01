@@ -42,4 +42,290 @@ body {
 }
 
 .card {
-    background: #171
+    background: #171522;
+    border: 1px solid #302544;
+    border-radius: 17px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+.card h2 {
+    color: #c084fc;
+    font-size: 19px;
+    margin-bottom: 12px;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #513078;
+    background: #0e0c17;
+    color: white;
+    outline: none;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg,#7629d9,#b34cff);
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 7px;
+}
+
+button:active {
+    opacity: 0.7;
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.menu button {
+    background: #211a30;
+    border: 1px solid #483064;
+    padding: 18px 8px;
+    font-size: 14px;
+}
+
+.info {
+    color: #aaa;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.back {
+    background: #292139;
+    margin-bottom: 15px;
+}
+
+.footer {
+    text-align: center;
+    color: #777;
+    font-size: 12px;
+    padding: 20px;
+}
+
+a {
+    color: #bd83ff;
+    text-decoration: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">📥</div>
+    <h1>INSTA DOWNLOADER</h1>
+    <p>Instagram videolarini yuklab oling</p>
+</div>
+
+<!-- ASOSIY SAHIFA -->
+<div id="home" class="page active">
+
+    <div class="card">
+        <h2>📥 Video yuklash</h2>
+        <input
+            type="text"
+            id="videoUrl"
+            placeholder="Instagram havolasini joylang..."
+        >
+        <button onclick="downloadVideo()">
+            ⬇️ Yuklab olish
+        </button>
+        <p class="info" style="margin-top:12px">
+            Instagram video, Reels yoki post havolasini yuboring.
+        </p>
+    </div>
+
+    <div class="menu">
+        <button onclick="showPage('stats')">📊 Statistika</button>
+        <button onclick="showPage('channels')">📢 Kanallar</button>
+        <button onclick="showPage('profile')">👤 Profilim</button>
+        <button onclick="showPage('help')">❓ Yordam</button>
+        <button onclick="showPage('settings')">⚙️ Sozlamalar</button>
+        <button id="adminButton" onclick="showPage('admin')" style="display:none">
+            👑 Admin panel
+        </button>
+    </div>
+
+</div>
+
+<!-- STATISTIKA -->
+<div id="stats" class="page">
+    <button class="back" onclick="showPage('home')">⬅️ Orqaga</button>
+    <div class="card">
+        <h2>📊 Statistika</h2>
+        <p class="info">Bot statistikasi:</p>
+        <p style="margin-top:15px">👥 Foydalanuvchilar: Serverdan olinadi</p>
+        <p style="margin-top:12px">📥 Yuklashlar: Serverdan olinadi</p>
+    </div>
+</div>
+
+<!-- KANALLAR -->
+<div id="channels" class="page">
+    <button class="back" onclick="showPage('home')">⬅️ Orqaga</button>
+    <div class="card">
+        <h2>📢 Bizning kanallar</h2>
+        <p style="margin:15px 0">
+            <a href="https://t.me/Qora_ritsar_uz">📢 @Qora_ritsar_uz</a>
+        </p>
+        <p style="margin:15px 0">
+            <a href="https://t.me/ENGZORMUZIKALARR">🎵 @ENGZORMUZIKALARR</a>
+        </p>
+    </div>
+</div>
+
+<!-- PROFIL -->
+<div id="profile" class="page">
+    <button class="back" onclick="showPage('home')">⬅️ Orqaga</button>
+    <div class="card">
+        <h2>👤 Mening profilim</h2>
+        <p id="userName" class="info">Foydalanuvchi</p>
+        <p id="userId" class="info" style="margin-top:10px"></p>
+    </div>
+</div>
+
+<!-- YORDAM -->
+<div id="help" class="page">
+    <button class="back" onclick="showPage('home')">⬅️ Orqaga</button>
+    <div class="card">
+        <h2>❓ Yordam</h2>
+        <p class="info">
+            Instagram videosini yuklash uchun havolani kiriting
+            va yuklab olish tugmasini bosing.
+            <br><br>
+            Muammo bo‘lsa administratorga murojaat qiling.
+        </p>
+        <button onclick="openLink('https://t.me/sanjarulaboyevvv')">
+            ✉️ Administrator
+        </button>
+    </div>
+</div>
+
+<!-- SOZLAMALAR -->
+<div id="settings" class="page">
+    <button class="back" onclick="showPage('home')">⬅️ Orqaga</button>
+    <div class="card">
+        <h2>⚙️ Sozlamalar</h2>
+        <p class="info">Ilova Telegram dizayniga moslashtirilgan.</p>
+        <button onclick="showPage('home')">🏠 Bosh sahifa</button>
+    </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin" class="page">
+    <button class="back" onclick="showPage('home')">⬅️ Orqaga</button>
+
+    <div class="card">
+        <h2>👑 ADMIN PANEL</h2>
+
+        <button onclick="adminAction('admin_stats')">
+            📊 Statistika
+        </button>
+
+        <button onclick="adminAction('admin_broadcast')">
+            📩 Xabar yuborish
+        </button>
+
+        <button onclick="adminAction('admin_channels')">
+            📢 Kanallarni boshqarish
+        </button>
+
+        <button onclick="adminAction('admin_admins')">
+            👥 Adminlarni boshqarish
+        </button>
+
+        <button onclick="adminAction('admin_toggle')">
+            🔴 Botni yoqish / o‘chirish
+        </button>
+    </div>
+</div>
+
+<div class="footer">
+    INSTAGRAM DOWNLOADER © 2026
+</div>
+
+<script>
+
+const tg = window.Telegram.WebApp;
+
+tg.ready();
+tg.expand();
+
+const user = tg.initDataUnsafe?.user;
+
+const ROOT_ADMIN = 5483351113;
+
+if (user) {
+    document.getElementById("userName").innerText =
+        "Ism: " + (user.first_name || "Foydalanuvchi");
+
+    document.getElementById("userId").innerText =
+        "Telegram ID: " + user.id;
+
+    if (user.id === ROOT_ADMIN) {
+        document.getElementById("adminButton").style.display = "block";
+    }
+}
+
+function showPage(page) {
+    document.querySelectorAll(".page").forEach(p => {
+        p.classList.remove("active");
+    });
+
+    document.getElementById(page).classList.add("active");
+}
+
+function downloadVideo() {
+    const url = document.getElementById("videoUrl").value.trim();
+
+    if (!url) {
+        tg.showAlert("Instagram havolasini kiriting!");
+        return;
+    }
+
+    if (!/^https?:\/\/(www\.)?instagram\.com\//i.test(url)) {
+        tg.showAlert("Instagram havolasi noto‘g‘ri!");
+        return;
+    }
+
+    tg.sendData(JSON.stringify({
+        action: "download",
+        url: url
+    }));
+}
+
+function adminAction(action) {
+    tg.sendData(JSON.stringify({
+        action: action
+    }));
+}
+
+function openLink(url) {
+    tg.openTelegramLink(url);
+}
+
+</script>
+
+</body>
+</html>
